@@ -57,11 +57,11 @@ int MOAIFacebookAndroid::_getUserID ( lua_State* L ) {
 
 //----------------------------------------------------------------//
 /**	@lua	graphRequest
-    @text	Make a request on Facebook's Graph API
+	@text	Make a request on Facebook's Graph API
 
 	@in		string  path
 	@opt	table  parameters
-    @out	nil
+	@out	nil
 */
 int MOAIFacebookAndroid::_graphRequest ( lua_State* L ) {
 
@@ -130,7 +130,7 @@ int MOAIFacebookAndroid::_login ( lua_State *L ) {
 	jobjectArray jpermissions = NULL;
 
 	if ( state.IsType ( 1, LUA_TTABLE )) {
-        jpermissions = self->StringArrayFromLua ( state, 1 );
+		jpermissions = self->StringArrayFromLua ( state, 1 );
 	}
 
 	if ( jpermissions == NULL ) {

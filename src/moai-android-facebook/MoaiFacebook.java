@@ -48,17 +48,17 @@ public class MoaiFacebook {
 		FACEBOOK_LOGIN_CANCEL,
 		FACEBOOK_LOGIN_ERROR,
 		FACEBOOK_DIALOG_SUCCESS,
-        FACEBOOK_DIALOG_CANCEL,
-        FACEBOOK_DIALOG_ERROR,
-    }
+		FACEBOOK_DIALOG_CANCEL,
+		FACEBOOK_DIALOG_ERROR,
+	}
 
 	private static Activity			sActivity			= null;
 	private static AppInviteDialog	sAppInviteDialog	= null;
-    private static CallbackManager	sCallbackManager	= null;
+	private static CallbackManager	sCallbackManager	= null;
 	private static AccessToken		sLoginAccessToken	= null;
-    private static String			sUserEmail			= null;
-    private static String			sUserID				= null;
-    private static String			sUserName			= null;
+	private static String			sUserEmail			= null;
+	private static String			sUserID				= null;
+	private static String			sUserName			= null;
 	private static ShareDialog 		sShareDialog		= null;
 
 	protected static native void	AKUInvokeListener 	( int eventID );
@@ -67,7 +67,7 @@ public class MoaiFacebook {
 	private static FacebookCallback sDialogCallback = new FacebookCallback () {
 
 		@Override
-        public void onSuccess ( Object dialogResult ) {
+		public void onSuccess ( Object dialogResult ) {
 
 			AKUInvokeListener ( ListenerEvent.FACEBOOK_DIALOG_SUCCESS.ordinal () );
 		}
@@ -88,70 +88,69 @@ public class MoaiFacebook {
 		}
 	};
 
-    private static FacebookCallback sLoginCallback = new FacebookCallback<LoginResult> () {
+	private static FacebookCallback sLoginCallback = new FacebookCallback<LoginResult> () {
 
-        @Override
-        public void onSuccess ( LoginResult loginResult ) {
+		@Override
+		public void onSuccess ( LoginResult loginResult ) {
 
-            sLoginAccessToken = loginResult.getAccessToken ();
+			sLoginAccessToken = loginResult.getAccessToken ();
 
-            GraphRequest.newMeRequest (
-                    sLoginAccessToken, new GraphRequest.GraphJSONObjectCallback () {
+			GraphRequest.newMeRequest (
+				sLoginAccessToken, new GraphRequest.GraphJSONObjectCallback () {
 
-                        @Override
-                        public void onCompleted ( JSONObject json, GraphResponse response ) {
+					@Override
+					public void onCompleted ( JSONObject json, GraphResponse response ) {
 
-                            if ( response.getError () != null ) {
+						if ( response.getError () != null ) {
 
-								AKUInvokeListener ( ListenerEvent.FACEBOOK_LOGIN_ERROR.ordinal () );
-                            } else {
+							AKUInvokeListener ( ListenerEvent.FACEBOOK_LOGIN_ERROR.ordinal () );
+						} else {
 
-                                try {
+							try {
 
-                                    sUserID         = json.getString ( "id" );
-                                    sUserName       = json.getString ( "name" );
+								sUserID         = json.getString ( "id" );
+								sUserName       = json.getString ( "name" );
 
-                                    AKUInvokeListener ( ListenerEvent.FACEBOOK_LOGIN_SUCCESS.ordinal () );
+								AKUInvokeListener ( ListenerEvent.FACEBOOK_LOGIN_SUCCESS.ordinal () );
 
-                                } catch ( JSONException e ) {
+							} catch ( JSONException e ) {
 
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-
-                }
+								e.printStackTrace();
+							}
+						}
+					}
+				}
 			).executeAsync ();
-        }
+		}
 
-        @Override
-        public void onCancel () {
+		@Override
+		public void onCancel () {
 
-            sUserEmail      = null;
-            sUserID         = null;
-            sUserName       = null;
+			sUserEmail      = null;
+			sUserID         = null;
+			sUserName       = null;
 
-            AKUInvokeListener ( ListenerEvent.FACEBOOK_LOGIN_CANCEL.ordinal () );
-        }
+			AKUInvokeListener ( ListenerEvent.FACEBOOK_LOGIN_CANCEL.ordinal () );
+		}
 
-        @Override
-        public void onError ( FacebookException e ) {
+		@Override
+		public void onError ( FacebookException e ) {
 
-            sUserEmail      = null;
-            sUserID         = null;
-            sUserName       = null;
+			sUserEmail      = null;
+			sUserID         = null;
+			sUserName       = null;
 
 			MoaiLog.i ( "MoaiFacebook login: ERROR" );
 			e.printStackTrace ();
 
-            AKUInvokeListener ( ListenerEvent.FACEBOOK_LOGIN_ERROR.ordinal () );
-        }
-    };
+			AKUInvokeListener ( ListenerEvent.FACEBOOK_LOGIN_ERROR.ordinal () );
+		}
+	};
 
 	//----------------------------------------------------------------//
 	public static void onActivityResult ( int requestCode, int resultCode, Intent data ) {
 
-        sCallbackManager.onActivityResult ( requestCode, resultCode, data );
+		sCallbackManager.onActivityResult ( requestCode, resultCode, data );
 	}
 
 	//----------------------------------------------------------------//
@@ -163,7 +162,7 @@ public class MoaiFacebook {
 
 		FacebookSdk.sdkInitialize ( activity );
 		sCallbackManager = CallbackManager.Factory.create ();
-        LoginManager.getInstance ().registerCallback ( sCallbackManager, sLoginCallback );
+		LoginManager.getInstance ().registerCallback ( sCallbackManager, sLoginCallback );
 
 		sAppInviteDialog = new AppInviteDialog ( activity );
 		sAppInviteDialog.registerCallback ( sCallbackManager, sDialogCallback );
@@ -182,31 +181,31 @@ public class MoaiFacebook {
 	// Facebook JNI callback methods
 	//================================================================//
 
-    //----------------------------------------------------------------//
-    public static String getToken () {
+	//----------------------------------------------------------------//
+	public static String getToken () {
 
-        return sLoginAccessToken.getToken ();
-    }
-
-    //----------------------------------------------------------------//
-    public static String getUserID () {
-
-        return sUserID;
-    }
+		return sLoginAccessToken.getToken ();
+	}
 
 	//----------------------------------------------------------------//
-    public static void inviteFriends ( String url, String img ) {
+	public static String getUserID () {
 
-        if ( AppInviteDialog.canShow () ) {
+		return sUserID;
+	}
 
-            AppInviteContent content = new AppInviteContent.Builder ()
-                    .setApplinkUrl ( url )
-                    .setPreviewImageUrl ( img )
-                    .build ();
+	//----------------------------------------------------------------//
+	public static void inviteFriends ( String url, String img ) {
 
-            sAppInviteDialog.show ( sActivity, content );
-        }
-    }
+		if ( AppInviteDialog.canShow () ) {
+
+			AppInviteContent content = new AppInviteContent.Builder ()
+					.setApplinkUrl ( url )
+					.setPreviewImageUrl ( img )
+					.build ();
+
+			sAppInviteDialog.show ( sActivity, content );
+		}
+	}
 
 	//----------------------------------------------------------------//
 	public static boolean isUserLoggedIn () {
@@ -217,10 +216,10 @@ public class MoaiFacebook {
 	//----------------------------------------------------------------//
 	public static void login ( String [] extra_permissions, boolean allowPubblishing ) {
 
-        ArrayList<String> permissions = new ArrayList<String> ();
+		ArrayList<String> permissions = new ArrayList<String> ();
 
-        permissions.add ( "public_profile" );
-        permissions.add ( "email" );
+		permissions.add ( "public_profile" );
+		permissions.add ( "email" );
 
 		for ( int i = 0; i < extra_permissions.length; i++ ) {
 
@@ -243,7 +242,7 @@ public class MoaiFacebook {
 		sUserID         = null;
 		sUserName       = null;
 
-        LoginManager.getInstance ().logOut ();
+		LoginManager.getInstance ().logOut ();
 	}
 
 	//----------------------------------------------------------------//
@@ -251,14 +250,14 @@ public class MoaiFacebook {
 
 		if ( ShareDialog.canShow ( ShareLinkContent.class ) ) {
 
-		    ShareLinkContent linkContent = new ShareLinkContent.Builder ()
+			ShareLinkContent linkContent = new ShareLinkContent.Builder ()
 					.setContentUrl ( Uri.parse ( url ) )
 					.setImageUrl ( Uri.parse ( img ) )
-		            .setContentTitle ( caption )
-		            .setContentDescription ( description )
-		            .build ();
+					.setContentTitle ( caption )
+					.setContentDescription ( description )
+					.build ();
 
-		    sShareDialog.show ( linkContent );
+			sShareDialog.show ( linkContent );
 		}
 	}
 }
